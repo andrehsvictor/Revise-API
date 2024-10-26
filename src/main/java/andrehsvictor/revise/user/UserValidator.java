@@ -1,5 +1,6 @@
 package andrehsvictor.revise.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ public class UserValidator {
     private final UserService userService;
 
     public void validate(User user) {
-        List<String> errors = List.of();
+        List<String> errors = new ArrayList<>();
         if (userService.existsByUsername(user.getUsername())) {
             errors.add("Username already in use: " + user.getUsername());
         }
