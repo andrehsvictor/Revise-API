@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: revise
   profiles:
     active: dev
   config:
