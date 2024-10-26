@@ -29,8 +29,8 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public void delete(Long id) {
-        userRepository.deleteById(id);
+    public void delete(User user) {
+        userRepository.delete(user);
     }
 
     public User findByOauthId(String oauthId) {
