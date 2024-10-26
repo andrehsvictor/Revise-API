@@ -3,19 +3,21 @@ package andrehsvictor.revise.user;
 import java.util.Map;
 
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
 
 import andrehsvictor.revise.keycloak.KeycloakUserService;
+import andrehsvictor.revise.user.dto.request.EmailRequestDTO;
 import andrehsvictor.revise.user.dto.request.UserRequestDTO;
 import andrehsvictor.revise.user.dto.response.UserResponseDTO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -55,17 +57,25 @@ public class UserController {
     }
 
     @PutMapping("/api/v1/users/password")
-    public Map<String, String> sendUpdatePasswordEmail(@RequestBody @Valid @Email String email) {
-        User user = userService.findByEmail(email);
+    public Map<String, String> sendUpdatePasswordEmail(@RequestBody @Valid EmailRequestDTO emailRequestDTO) {
+        User user = userService.findByEmail(emailRequestDTO.getEmail());
         kcUserService.sendUpdatePasswordEmail(user.getOauthId());
         return Map.of("message", "E-mail sent with instructions to update password");
     }
 
     @PutMapping("/api/v1/users/verify-email")
-    public Map<String, String> sendVerifyEmail(@RequestBody @Valid @Email String email) {
-        User user = userService.findByEmail(email);
+    public Map<String, String> sendVerifyEmail(@RequestBody @Valid EmailRequestDTO emailRequestDTO) {
+        User user = userService.findByEmail(emailRequestDTO.getEmail());
         kcUserService.sendVerifyEmail(user.getOauthId());
         return Map.of("message", "E-mail sent with instructions to verify e-mail");
+    }
+
+    @DeleteMapping("/api/v1/users/me")
+    public ResponseEntity<Void> delete() {
+        User user = userService.getCurrentUser();
+        kcUserService.delete(user.getOauthId());
+        userService.delete(user);
+        return ResponseEntity.noContent().build();
     }
 
 }
