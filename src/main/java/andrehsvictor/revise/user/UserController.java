@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import andrehsvictor.revise.keycloak.KeycloakUserService;
 import andrehsvictor.revise.user.dto.request.EmailRequestDTO;
-import andrehsvictor.revise.user.dto.request.UpdateUserRequestDTO;
-import andrehsvictor.revise.user.dto.request.UserRequestDTO;
+import andrehsvictor.revise.user.dto.request.UpdateUserDTO;
+import andrehsvictor.revise.user.dto.request.CreateUserDTO;
 import andrehsvictor.revise.user.dto.response.UserResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,19 +37,19 @@ public class UserController {
 
     @PostMapping("/api/v1/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDTO create(@RequestBody @Valid UserRequestDTO userRequestDTO) {
-        User user = userRequestDTO.toUser();
+    public UserResponseDTO create(@RequestBody @Valid CreateUserDTO createUserDTO) {
+        User user = createUserDTO.toUser();
         userValidator.validate(user);
-        UserRepresentation kcUser = kcUserService.create(user, userRequestDTO.getPassword());
+        UserRepresentation kcUser = kcUserService.create(user, createUserDTO.getPassword());
         user.setOauthId(kcUser.getId());
         user = userService.save(user);
         return new UserResponseDTO(user, kcUser);
     }
 
     @PutMapping("/api/v1/users/me")
-    public UserResponseDTO update(@RequestBody @Valid UpdateUserRequestDTO userRequestDTO) {
+    public UserResponseDTO update(@RequestBody @Valid UpdateUserDTO updateUserDTO) {
         User user = userService.getCurrentUser();
-        User newUser = userRequestDTO.toUser();
+        User newUser = updateUserDTO.toUser();
         userValidator.validate(newUser);
         UserRepresentation kcUser = kcUserService.findById(user.getOauthId()).toRepresentation();
         kcUser = kcUserService.update(newUser, kcUser);
