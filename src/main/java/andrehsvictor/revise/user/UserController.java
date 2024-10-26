@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import andrehsvictor.revise.keycloak.KeycloakUserService;
 import andrehsvictor.revise.user.dto.request.EmailRequestDTO;
+import andrehsvictor.revise.user.dto.request.UpdateUserRequestDTO;
 import andrehsvictor.revise.user.dto.request.UserRequestDTO;
 import andrehsvictor.revise.user.dto.response.UserResponseDTO;
 import jakarta.validation.Valid;
@@ -46,7 +47,7 @@ public class UserController {
     }
 
     @PutMapping("/api/v1/users/me")
-    public UserResponseDTO update(@RequestBody @Valid UserRequestDTO userRequestDTO) {
+    public UserResponseDTO update(@RequestBody @Valid UpdateUserRequestDTO userRequestDTO) {
         User user = userService.getCurrentUser();
         User newUser = userRequestDTO.toUser();
         userValidator.validate(newUser);
